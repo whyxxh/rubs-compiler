@@ -15,5 +15,6 @@ this is a recreational programming project where I attempt to make a compiler an
 
 ### progress
 
-**day 0x01**
+**day 0x01:**
 
+File I/O basics
