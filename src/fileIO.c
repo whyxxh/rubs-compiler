@@ -1,4 +1,4 @@
-#include "fileIO.h"
+#include "../include/fileIO.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -19,7 +19,7 @@ char *get_file_content(FILE *f)
 		return NULL;
 	}
 	size_t read = fread(content, sizeof(char), s, f);
-	if (read != s) {
+	if (read != (long unsigned int)s) {
 		perror("failled file reading");
 		return NULL;
 	}
