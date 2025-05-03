@@ -1,1 +1,1 @@
-gcc main.c -o ./rcc
+gcc main.c -o ./rc

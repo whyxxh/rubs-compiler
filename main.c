@@ -12,7 +12,6 @@ int main(int argc, char **argv)
     FILE *f = fopen(argv[1], "r");
     if (!f) {
         perror("failled to open file");
-    }
-    
+    }    
     return 0;
 }
