@@ -1,3 +1,5 @@
+#include <ctype.h>
+#include <setjmp.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,11 +44,49 @@ static Lexer lexer_init(char *f_content, long f_size)
 	return l;
 }
 
+static void skip_spaces(Lexer *l)
+{
+	while (isspace(lexer_peek_char(l))){
+		lexer_read_char(l);
+	}
+}
+
+static void skip_comments(Lexer *l) 
+{
+	if (lexer_peek_char(l) == '/') {
+		switch (lexer_read_char(l)) {
+		case '/':
+			while (l->curr_ch != '\n') {
+				lexer_read_char(l);
+			}
+			break;
+		case '*':
+			while (1) {
+				if (l->curr_ch == EOF) {
+					break;
+				}
+				if (l->curr_ch == '*' && lexer_peek_char(l) == '/') {
+					lexer_read_char(l);
+					lexer_read_char(l);
+					break;
+				}
+				lexer_read_char(l);
+			}
+			break;
+		}
+	}
+
+}
 
 Token *tokenize(char *f_content, long f_size, int token_num) 
 {
 	Lexer l = lexer_init(f_content, f_size);
-	 
+	while (l.curr_ch != EOF) {
+		printf("%c", l.curr_ch);
+		skip_spaces(&l);
+		skip_comments(&l);
+		lexer_read_char(&l);
+	}	 
 
 	// just so that the warning stops bothering me
 	Token *temp;
