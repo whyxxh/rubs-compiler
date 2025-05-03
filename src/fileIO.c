@@ -1,8 +1,9 @@
-#include <stdio.h>
+#include "fileIO.h"
 #include <stdlib.h>
-#include <string.h>
+#include <stdio.h>
 
-long get_file_size(FILE *f) {
+long get_file_size(FILE *f) 
+{
 	fseek(f, 0L, SEEK_END);
 	long s = ftell(f);
 	return s;
@@ -13,7 +14,15 @@ char *get_file_content(FILE *f)
 	long s = get_file_size(f);
 	rewind(f);
 	char *content = malloc(s + 1);
-	fread(content, sizeof(char), s, f);
+	if (!content) {
+		perror("failled content string allocation");
+		return NULL;
+	}
+	size_t read = fread(content, sizeof(char), s, f);
+	if (read != s) {
+		perror("failled file reading");
+		return NULL;
+	}
 	content[s] = '\0';
 	return content;    
 }
@@ -21,7 +30,7 @@ char *get_file_content(FILE *f)
 FILE *open_file(int argc, char **argv) 
 {
 	if (argc < 2 ) {
-		fprintf(stdout, "usage : %s <file>\n", argv[0]);
+		fprintf(stdout, "usage : %s <path_to_file>\n", argv[0]);
 		return NULL;
 	}
 
@@ -37,18 +46,6 @@ FILE *open_file(int argc, char **argv)
 void free_file(FILE *f, char *content) 
 {
 	fclose(f);
-	free(content);
-}
-
-int main(int argc, char **argv) 
-{ 
-	FILE *f = open_file(argc, argv);
-	if (!f)
-		return 1;
-
-	char *content = get_file_content(f);
-	printf("file content : \n---\n%s---\n", content);
-
-	free_file(f, content);
-	return 0;
+	if (content)
+		free(content);
 }

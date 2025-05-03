@@ -1,1 +1,1 @@
-gcc main.c -o ./rc
+gcc main.c fileIO.c -o ./rc 
