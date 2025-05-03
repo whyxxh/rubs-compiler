@@ -2,16 +2,29 @@
 #define LEXER_H
 
 typedef enum {
-	CONSTANT,   // constant values : numbers...
-	IDENTIFIER, // identifiers : variable names...
-	OPERATOR,   // operators : +, - ...
-	KEYWORD,    // keywords : language words : if, for.... 
-	PUNCTUATOR, // punctuation : (, {, ...
-} TokenType;
+	// operators
+	PLUS,
+	MIN,
+	MULT,
+	DIV,
+
+	// punctuation
+	LPAREN,
+	RPAREN,
+
+	// constant values
+	NUM,
+	BOOL,
+
+	INVALID,
+} Token;
 
 typedef struct {
-	char *value;
-	TokenType type;
-} Token;
+	long f_len;
+	unsigned int pos;
+	unsigned int read_pos;
+	char *f_content;
+	char curr_ch;
+} Lexer;
 
 #endif
