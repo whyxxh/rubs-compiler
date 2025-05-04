@@ -1,5 +1,5 @@
 #include <ctype.h>
-#include <setjmp.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,88 +7,173 @@
 #include "../include/lexer.h"
 
 const char *keywords[] = {
-	NULL
+        NULL
 }; /* NULL for now as I am trying to evaluate 
-	  mathematical expressions with ints only */
+          mathematical expressions with ints only */
 
 static char lexer_peek_char(Lexer *l)
 {
-	if (l->read_pos >= l->f_len)
-		return EOF;
+        if (l->read_pos >= l->f_len)
+                return EOF;
 
-	return l->f_content[l->read_pos];
+        return l->f_content[l->read_pos];
 }
 
 static char lexer_read_char(Lexer *l) 
 {
-	l->curr_ch = lexer_peek_char(l);
-	if (l->curr_ch == EOF)
-		return EOF;
+        l->curr_ch = lexer_peek_char(l);
+        if (l->curr_ch == EOF)
+                return EOF;
 
-	l->pos = l->read_pos; 
-	l->read_pos++;
-	return l->curr_ch;
+        l->pos = l->read_pos; 
+        l->read_pos++;
+        return l->curr_ch;
 }
 
 static Lexer lexer_init(char *f_content, long f_size)
 {
-	Lexer l = (Lexer){
-		.f_content = f_content,
-		.f_len = f_size,
-		.pos = 0,
-		.read_pos = 0,
-		.curr_ch = 0
-	};
-	lexer_read_char(&l);
+        Lexer l = (Lexer){
+                .f_content = f_content,
+                .f_len = f_size,
+                .pos = 0,
+                .read_pos = 0,
+                .curr_ch = 0
+        };
+        lexer_read_char(&l);
 
-	return l;
+        return l;
 }
 
 static void skip_spaces(Lexer *l)
 {
-	while (isspace(lexer_peek_char(l))){
-		lexer_read_char(l);
-	}
+        while (isspace(lexer_peek_char(l))){
+                lexer_read_char(l);
+        }
 }
 
 static void skip_comments(Lexer *l) 
 {
-	if (lexer_peek_char(l) == '/') {
-		switch (lexer_read_char(l)) {
-		case '/':
-			while (l->curr_ch != '\n') {
-				lexer_read_char(l);
-			}
-			break;
-		case '*':
-			while (1) {
-				if (l->curr_ch == EOF) {
-					break;
-				}
-				if (l->curr_ch == '*' && lexer_peek_char(l) == '/') {
-					lexer_read_char(l);
-					lexer_read_char(l);
-					break;
-				}
-				lexer_read_char(l);
-			}
-			break;
-		}
-	}
-
+        if (lexer_peek_char(l) == '/') {
+                switch (lexer_read_char(l)) {
+                        case '/':
+                                while (l->curr_ch != '\n') {
+                                        lexer_read_char(l);
+                                }
+                                break;
+                        /* 
+                         case '*':
+                                while (1) {
+                                        if (l->curr_ch == EOF) {
+                                                break;
+                                        }
+                                        if (l->curr_ch == '*' && 
+                                        lexer_peek_char(l) == '/') {
+                                                lexer_read_char(l);
+                                                lexer_read_char(l);
+                                                break;
+                                        }
+                                        lexer_read_char(l);
+                                }
+                                break;
+                        */ // for now we will work with only one line comments
+                }
+        }
 }
 
-Token *tokenize(char *f_content, long f_size, int token_num) 
+static int is_operator(Lexer *l)
 {
-	Lexer l = lexer_init(f_content, f_size);
-	while (l.curr_ch != EOF) {
-		printf("%c", l.curr_ch);
-		skip_spaces(&l);
-		skip_comments(&l);
-		lexer_read_char(&l);
-	}	 
+        switch (l->curr_ch) {
+        case '+': return 1;
+        case '-': return 1;
+        case '*': return 1;
+        case '/': return 1;
+        default : return 0;
+        }
+}
 
-	// just so that the warning stops bothering me
-	Token *temp;
-	return temp;
+static int is_punctuation(Lexer *l)
+{
+        switch (l->curr_ch) {
+        case '(': return 1;
+        case ')': return 1;
+        default : return 0;
+        }
+}
+
+static char *lexer_get_num(Lexer *l)
+{
+        if (!isdigit(l->curr_ch))
+                return NULL;
+        
+        unsigned int start_pos = l->pos;
+
+        while (isdigit(l->curr_ch)) {
+                lexer_read_char(l);
+        }
+
+        unsigned int len = l->pos - start_pos;
+
+        char *num = malloc(len + 1);
+        if (!num) return NULL;
+
+        strncpy(num, l->f_content + start_pos, len);
+        num[len] = '\0';
+
+        return num;
+}
+
+static Token lexer_next_token(Lexer *l)
+{
+        skip_spaces(l);
+        skip_comments(l);
+
+        if (l->curr_ch == EOF)
+                return (Token){.type = EOF_TOK, .val = NULL};
+        else if (isdigit(l->curr_ch)) {
+                return (Token){.type = NUM,
+                        .val = lexer_get_num(l)
+                };
+        } else if (is_operator(l)) {        
+                switch (l->curr_ch) {
+                case '+': 
+                        return (Token){.type = PLUS, .val = "+"};
+                case '-':
+                        return (Token){.type = MIN, .val = "-"};
+                case '*':
+                        return (Token){.type = MULT, .val = "*"};
+                case '/':
+                        return (Token){.type = DIV, .val = "/"};
+                }
+                lexer_read_char(l);
+        } else if (is_punctuation(l)) {
+                switch (l->curr_ch) {
+                case ')': 
+                        return (Token){.type = RPAREN, .val = ")"};
+                case '(':
+                        return (Token){.type = LPAREN, .val = "("};
+                }
+                lexer_read_char(l);
+        } else if (isalnum(l->curr_ch)) {
+                lexer_read_char(l);
+                return (Token){.type = INVALID, .val = NULL}; // temporary
+        } else { 
+                lexer_read_char(l);
+                return (Token){.type = INVALID, .val = NULL};
+        }
+}
+
+Token *tokenize(char *f_content, long f_size, int *token_num) 
+{
+        Lexer l = lexer_init(f_content, f_size);
+        Token token;
+        token = lexer_next_token(&l);
+        while (token.type != EOF_TOK) {
+                if (token.val)
+                        printf("Token(type=%d, val='%s')\n", token.type,
+                               token.val);
+                else
+                        printf("Token(type=%d, val=NULL)\n", token.type);
+
+                token = lexer_next_token(&l);
+        }
 }

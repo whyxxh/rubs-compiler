@@ -2,31 +2,38 @@
 #define LEXER_H
 
 typedef enum {
-	// operators
-	PLUS,
-	MIN,
-	MULT,
-	DIV,
+        // operators
+        PLUS,
+        MIN,
+        MULT,
+        DIV,
 
-	// punctuation
-	LPAREN,
-	RPAREN,
+        // punctuation
+        LPAREN,
+        RPAREN,
+        SEMI_COLON,
 
-	// constant values
-	NUM,
-	BOOL,
+        // constant values
+        NUM,
+        BOOL,
 
-	INVALID,
+        INVALID,
+        EOF_TOK,
+} TokenType;
+
+typedef struct {
+        char *val;
+        TokenType type;
 } Token;
 
 typedef struct {
-	long f_len;
-	unsigned int pos;
-	unsigned int read_pos;
-	char *f_content;
-	char curr_ch;
+        long f_len;
+        unsigned int pos;
+        unsigned int read_pos;
+        char *f_content;
+        char curr_ch;
 } Lexer;
 
-Token *tokenize(char *f_content, long f_len, int token_num);
+Token *tokenize(char *f_content, long f_len, int *token_num);
 
 #endif
