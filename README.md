@@ -7,9 +7,9 @@ this is a recreational programming project where I attempt to make a compiler an
 - [ ] make a basic compiler for arithmetic expressions
 - [ ] make a basic C subset compiler
 
-### more specific steps (for now)
+### more specific steps (first few days)
 
-- [ ] Build a lexer to tokenize the code : code -> Tokens
+- [x] Build a lexer to tokenize the code : code -> Tokens
 - [ ] Parse the tokens into an AST
 - [ ] Compile/transpile the AST into assembly or another language
 
@@ -18,3 +18,7 @@ this is a recreational programming project where I attempt to make a compiler an
 **day 0x01:**
 
 File I/O basics
+
+**day 0x02**
+
+Progress on lexer -> functional tokenizer
