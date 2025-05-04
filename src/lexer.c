@@ -94,6 +94,7 @@ static int is_punctuation(Lexer *l)
         switch (l->curr_ch) {
         case '(': return 1;
         case ')': return 1;
+        case ';': return 1;
         default : return 0;
         }
 }
@@ -165,6 +166,10 @@ static Token lexer_next_token(Lexer *l)
                 case '(': {
                         lexer_read_char(l);
                         return (Token){.type = LPAREN, .val = "("};
+                }
+                case ';': {
+                        lexer_read_char(l);
+                        return (Token){.type = SEMI_COLON, .val = ";"};
                 }
                 }
                 lexer_read_char(l);
