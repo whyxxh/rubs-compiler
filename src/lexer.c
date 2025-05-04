@@ -11,6 +11,23 @@ const char *keywords[] = {
 }; /* NULL for now as I am trying to evaluate 
           mathematical expressions with ints only */
 
+static char *token_type_to_str(TokenType t)
+{
+        switch (t) {
+        case PLUS: return "plus";
+        case MIN: return "min";
+        case MULT: return "mult";
+        case DIV: return "div";
+        case LPAREN: return "lparen";
+        case RPAREN: return "rparen";
+        case SEMI_COLON: return "semicol";
+        case NUM: return "num";
+        case BOOL: return "bool";
+        case INVALID: return "invalid";
+        case EOF_TOK: return "eof";
+        }
+}
+
 static char lexer_peek_char(Lexer *l)
 {
         if (l->read_pos >= l->f_len)
@@ -53,30 +70,10 @@ static void skip_spaces(Lexer *l)
 
 static void skip_comments(Lexer *l) 
 {
-        if (lexer_peek_char(l) == '/') {
-                switch (lexer_read_char(l)) {
-                        case '/':
-                                while (lexer_peek_char(l) != '\n') {
-                                        lexer_read_char(l);
-                                }
-                                break;
-                        /* 
-                         * MULTI LINE COMMENTS DONT WORK
-                         case '*':
-                                while (1) {
-                                        if (l->curr_ch == EOF) {
-                                                break;
-                                        }
-                                        if (l->curr_ch == '*' && 
-                                        lexer_peek_char(l) == '/') {
-                                                lexer_read_char(l);
-                                                lexer_read_char(l);
-                                                break;
-                                        }
-                                        lexer_read_char(l);
-                                }
-                                break;
-                        */
+        if (l->curr_ch == '/' && lexer_peek_char(l) == '/') {
+                lexer_read_char(l);
+                while (l->curr_ch != '\n' && l->curr_ch != EOF) {
+                        lexer_read_char(l);
                 }
         }
 }
@@ -126,7 +123,12 @@ static char *lexer_get_num(Lexer *l)
 static Token lexer_next_token(Lexer *l)
 {
         skip_spaces(l);
-        skip_comments(l);
+
+        while (l->curr_ch == '/' && lexer_peek_char(l) == '/') {
+                skip_comments(l);
+                skip_spaces(l); // Skip newlines/spaces after comments
+        }
+
 
         if (l->curr_ch == EOF) {
                 return (Token){.type = EOF_TOK, .val = NULL};
@@ -177,17 +179,33 @@ static Token lexer_next_token(Lexer *l)
         return (Token){.type = INVALID, .val = NULL};
 }
 
-Token *tokenize(char *f_content, long f_size, int *token_num) 
+Token *tokenize(char *f_content, long f_size, unsigned int *token_num) 
 {
         Lexer l = lexer_init(f_content, f_size);
-        Token token;
-        token = lexer_next_token(&l);
-        while (token.type != EOF_TOK) {
-                if (token.val)
-                        printf("'%s'\n", token.val);
-                else
-                        printf("NULL\n");
-
-                token = lexer_next_token(&l);
+        unsigned int token_arr_cap = 256;
+        Token *tokens = malloc(sizeof(Token) * token_arr_cap);
+        if (!tokens) {
+                perror("failled token array allocation");
+                return NULL;
         }
+        *token_num = 0;
+        tokens[*token_num] = lexer_next_token(&l);
+        while (tokens[*token_num].type != EOF_TOK) {
+                (*token_num)++;
+
+                if (*token_num >= token_arr_cap) {
+                        token_arr_cap *= 2;
+                        tokens = realloc(tokens, token_arr_cap);
+                        if (!tokens) {
+                                perror("failled token array reallocation");
+                                return NULL;
+                        }
+                }
+                tokens[*token_num] = lexer_next_token(&l);
+                printf("token num %d, [token val: %s, token type: %s]\n",
+                       *token_num, tokens[*token_num].val, 
+                       token_type_to_str(tokens[*token_num].type));
+        }
+
+        return tokens;
 }
