@@ -184,7 +184,16 @@ static Token lexer_next_token(Lexer *l)
         return (Token){.type = INVALID, .val = NULL};
 }
 
-Token *tokenize(char *f_content, long f_size, unsigned int *token_num) 
+void free_tokens(Token *tokens, unsigned int token_num)
+{
+        for (int i = 0; i < token_num; ++i) {
+                if (tokens[i].type == NUM || tokens[i].val == NULL) 
+                        free(tokens[i].val);
+        }
+        free(tokens);
+}
+
+Token *lexer_tokenize(char *f_content, long f_size, unsigned int *token_num) 
 {
         Lexer l = lexer_init(f_content, f_size);
         unsigned int token_arr_cap = 256;

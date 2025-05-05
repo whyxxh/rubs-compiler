@@ -3,43 +3,45 @@
 
 #include "lexer.h"
 
+typedef struct {
+        Token *tokens;
+        Token curr_token; int curr_token_idx;
+} Parser;
+
 typedef enum {
-    NODE_BIN,
-    NODE_UN,
-    NODE_NUM,
-} ParseNodeType;
+	NODE_BIN,
+	NODE_UN,
+	NODE_NUM,
+} ASTNodeType;
 
-typedef struct parse_node_bin {
-    Token token;
-    struct parse_node *left;
-    struct parse_node *right;
-} ParseNodeBin;
+typedef struct ast_node_bin {
+	Token token;
+	struct ast_node *left;
+	struct ast_node *right;
+} ASTNodeBin;
 
-typedef struct parse_node_un {
-    Token token;
-    struct parse_node *next;
-} ParseNodeUn;
+typedef struct ast_node_un {
+	Token token;
+	struct ast_node *next;
+} ASTNodeUn;
 
-typedef struct parse_node_num {
-    Token token;
-} ParseNodeNum;
+typedef struct ast_node_num {
+	Token token;
+} ASTNodeNum;
 
-typedef struct parse_node {
-    ParseNodeType node_type;
-    union {
-        ParseNodeBin bin;
-        ParseNodeUn un;
-        ParseNodeNum num;
-    } type;
-} ParseNode;
+typedef struct ast_node {
+	ASTNodeType node_type;
+	union {
+		ASTNodeBin bin;
+		ASTNodeUn un;
+		ASTNodeNum num;
+	} type;
+} ASTNode;
 
 typedef struct {
-    ParseNode *root;
-} ParseTree;
+	ASTNode *root;
+} AST;
 
-ParseNode* parse_program(Token *ts); // list of exprs
-ParseNode* parse_expr(Token *ts);
-ParseNode* parse_term(Token *ts);
-ParseNode* parse_factor(Token *ts);
+ void parse_tokens(Token *tokens);
 
 #endif // PARSER_H

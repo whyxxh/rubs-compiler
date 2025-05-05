@@ -34,6 +34,7 @@ typedef struct {
         char curr_ch;
 } Lexer;
 
-Token *tokenize(char *f_content, long f_len, unsigned int *token_num);
+void free_tokens(Token *tokens, unsigned int token_num);
+Token *lexer_tokenize(char *f_content, long f_len, unsigned int *token_num);
 
 #endif
