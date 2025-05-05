@@ -3,9 +3,10 @@
 
 #include "lexer.h"
 
-typedef enum{
+typedef enum {
     NODE_BIN,
     NODE_UN,
+    NODE_NUM,
 } ParseNodeType;
 
 typedef struct parse_node_bin {
@@ -19,16 +20,26 @@ typedef struct parse_node_un {
     struct parse_node *next;
 } ParseNodeUn;
 
+typedef struct parse_node_num {
+    Token token;
+} ParseNodeNum;
+
 typedef struct parse_node {
     ParseNodeType node_type;
     union {
         ParseNodeBin bin;
         ParseNodeUn un;
+        ParseNodeNum num;
     } type;
 } ParseNode;
 
 typedef struct {
-
+    ParseNode *root;
 } ParseTree;
+
+ParseNode* parse_program(Token *ts); // list of exprs
+ParseNode* parse_expr(Token *ts);
+ParseNode* parse_term(Token *ts);
+ParseNode* parse_factor(Token *ts);
 
 #endif // PARSER_H
