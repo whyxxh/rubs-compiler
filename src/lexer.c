@@ -9,8 +9,9 @@
 const char *keywords[] = {
         NULL
 }; /* NULL for now as I am trying to evaluate 
-          mathematical expressions with ints only */
+      mathematical expressions with ints only */
 
+/*
 static char *token_type_to_str(TokenType t)
 {
         switch (t) {
@@ -27,11 +28,12 @@ static char *token_type_to_str(TokenType t)
         case EOF_TOK: return "eof";
         }
 }
+*/
 
 static char lexer_peek_char(Lexer *l)
 {
         if (l->read_pos >= l->f_len)
-                return EOF;
+                return (char)EOF;
 
         return l->f_content[l->read_pos];
 }
@@ -40,7 +42,7 @@ static char lexer_read_char(Lexer *l)
 {
         l->curr_ch = lexer_peek_char(l);
         if (l->curr_ch == EOF)
-                return EOF;
+                return (char)EOF;
 
         l->pos = l->read_pos; 
         l->read_pos++;
@@ -186,8 +188,8 @@ static Token lexer_next_token(Lexer *l)
 
 void free_tokens(Token *tokens, unsigned int token_num)
 {
-        for (int i = 0; i < token_num; ++i) {
-                if (tokens[i].type == NUM || tokens[i].val == NULL) 
+        for (unsigned int i = 0; i < token_num; ++i) {
+                if (tokens[i].type == NUM && tokens[i].val != NULL) 
                         free(tokens[i].val);
         }
         free(tokens);
@@ -209,16 +211,13 @@ Token *lexer_tokenize(char *f_content, long f_size, unsigned int *token_num)
 
                 if (*token_num >= token_arr_cap) {
                         token_arr_cap *= 2;
-                        tokens = realloc(tokens, token_arr_cap);
+                        tokens = realloc(tokens, sizeof(Token) * token_arr_cap);
                         if (!tokens) {
                                 perror("failled token array reallocation");
                                 return NULL;
                         }
                 }
                 tokens[*token_num] = lexer_next_token(&l);
-                printf("token num %d, [token val: %s, token type: %s]\n",
-                       *token_num, tokens[*token_num].val, 
-                       token_type_to_str(tokens[*token_num].type));
         }
 
         return tokens;

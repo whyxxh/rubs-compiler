@@ -42,6 +42,6 @@ typedef struct {
 	ASTNode *root;
 } AST;
 
- void parse_tokens(Token *tokens);
+ AST parse_tokens(Token *tokens);
 
 #endif // PARSER_H
