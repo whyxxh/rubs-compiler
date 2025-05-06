@@ -35,13 +35,14 @@ typedef struct ast_node {
 		ASTNodeBin bin;
 		ASTNodeUn un;
 		ASTNodeNum num;
-	} type;
+	} node;
 } ASTNode;
 
 typedef struct {
 	ASTNode *root;
 } AST;
 
- AST parse_tokens(Token *tokens);
+int ast_init(Token *tokens, AST *ast);
+int parse_tokens(Token *tokens, AST *ast);
 
 #endif // PARSER_H
