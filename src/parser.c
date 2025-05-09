@@ -2,27 +2,27 @@
 #include <stdlib.h>
 #include "../include/parser.h"
 
-int ast_init(Token *tokens, AST *ast)
+// Public interface
+int ast_init(AST *ast);
+void free_ast(AST *ast);
+int parse_tokens(Token *tokens, AST *ast);
+
+// Internal/static functions
+static void free_ast_node(ASTNode *node);
+static Parser parser_init(Token *tokens);
+static void parser_advance_token(Parser *p);
+static int parser_eat_token(TokenType type, Parser *p);
+static ASTNode *parse_factor(Parser *p);
+static ASTNode *parse_term(Parser *p);
+static ASTNode *parse_expr(Parser *p);
+static void print_ast_node(ASTNode *node);
+static void print_ast(AST *ast);
+
+int ast_init(AST *ast)
 {
-        if (!tokens || tokens[1].type == EOF_TOK) {
-                return 0;
-        }
-
-        ASTNode *root = (ASTNode *)malloc(sizeof(ASTNode));
-        if (!root)
-                return 0;
-
-        *root = (ASTNode){
-                .node_type = NODE_BIN,
-                .node.bin = {
-                        .token = tokens[1],
-                        .left = NULL, .right = NULL
-                }
-        };
-
-        *ast = (AST){ .root = root };
-
-        return 1;
+    if (!ast) return 0;
+    *ast = (AST){ .root = NULL };
+    return 1;
 }
 
 static void free_ast_node(ASTNode *node)
@@ -47,26 +47,6 @@ static Parser parser_init(Token *tokens)
         };
 }
 
-
-static int is_token_operator(Token token)
-{
-        switch (token.type) {
-        case PLUS: return 1;
-        case MIN:  return 1;
-        case DIV:  return 1;
-        case MULT: return 1;
-        default:   return 0;
-        }
-}
-
-static Token parser_peak_token(Parser *p)
-{
-        if (p->tokens[p->curr_token_idx + 1].type == EOF_TOK)
-                return (Token){.type = EOF_TOK, .val = NULL};
-
-        return p->tokens[p->curr_token_idx + 1];
-}
-
 static void parser_advance_token(Parser *p) 
 {
         if (p->tokens[p->curr_token_idx].type == EOF_TOK)
@@ -75,7 +55,7 @@ static void parser_advance_token(Parser *p)
         p->curr_token = p->tokens[p->curr_token_idx];
 }
 
-static int perser_eat_token(TokenType type, Parser *p)
+static int parser_eat_token(TokenType type, Parser *p)
 {
         if (type == p->curr_token.type) {
                 parser_advance_token(p);
@@ -88,6 +68,26 @@ static int perser_eat_token(TokenType type, Parser *p)
 static ASTNode *parse_factor(Parser *p)
 {
         /* for now assuming no parenthesis */
+
+        if (p->curr_token.type == LPAREN) {
+                if (parser_eat_token(LPAREN, p)) {
+                        fprintf(stderr, "expected ')'; got %s",
+                                p->curr_token.val);
+                        return NULL;
+                }
+
+                ASTNode *node = parse_expr(p);
+                if (!node) return NULL; 
+
+                if (parser_eat_token(RPAREN, p)) {
+                        fprintf(stderr, "expected '('; got %s",
+                                p->curr_token.val);
+                        return NULL;
+                }
+
+                return node;
+        }
+
         ASTNode *node = (ASTNode *)malloc(sizeof(ASTNode));
         *node = (ASTNode){
                 .node_type = NODE_NUM,
@@ -96,7 +96,12 @@ static ASTNode *parse_factor(Parser *p)
                 }
         };
 
-        parser_advance_token(p);
+        if (parser_eat_token(NUM, p)) { // eat the number
+                fprintf(stderr, "Failed to eat token '%s'\n",
+                        p->curr_token.val);
+                free(node);
+                return NULL;
+        }
 
         return node;
 }
@@ -213,13 +218,28 @@ static void print_ast(AST *ast)
 int parse_tokens(Token *tokens, AST *ast)
 {
         Parser p = parser_init(tokens);
-        int token_count = 0;
 
         while (p.curr_token.type != EOF_TOK) {
                 ast->root = parse_expr(&p); 
+
+                if (!ast->root) {
+                        fprintf(stderr, "Error: could not parse expression\n");
+                        return 0;
+                }
+
+                print_ast(ast);
+
+                if (parser_eat_token(SEMI_COLON, &p) &&
+                    p.curr_token.type != EOF_TOK) {
+                        fprintf(stderr,
+                                "Error: expected semicolon or EOF, got '%s'\n",
+                                p.curr_token.val);
+                        return 0;
+                }
+
+                free_ast(ast);
         }
 
-        print_ast(ast);
 
         return 1;
 }

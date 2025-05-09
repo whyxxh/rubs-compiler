@@ -1,9 +1,8 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "../include/fileIO.h"
 #include "../include/lexer.h"
 #include "../include/parser.h"
+#include "../include/evaluator.h"
 
 int main(int argc, char **argv) 
 { 
@@ -21,7 +20,7 @@ int main(int argc, char **argv)
         }
 
         AST *ast;
-        if (!ast_init(tokens, ast)){
+        if (!ast_init(ast)){
                 fprintf(stderr, "failled ast initialisation");
                 return -1;  
         }
@@ -30,6 +29,9 @@ int main(int argc, char **argv)
                 fprintf(stderr, "failled token parsing");
                 return -1;  
         }
+
+        int evaluation = evaluate_ast(ast->root);
+        printf("%d", evaluation);
 
         free_tokens(tokens, token_num);
 	free_file(f, content);

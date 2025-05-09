@@ -42,7 +42,7 @@ typedef struct {
 	ASTNode *root;
 } AST;
 
-int ast_init(Token *tokens, AST *ast);
+int ast_init(AST *ast);
 int parse_tokens(Token *tokens, AST *ast);
 
 #endif // PARSER_H

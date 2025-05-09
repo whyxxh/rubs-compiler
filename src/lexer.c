@@ -8,27 +8,28 @@
 
 const char *keywords[] = {
         NULL
-}; /* NULL for now as I am trying to evaluate 
-      mathematical expressions with ints only */
+}; 
+/* NULL for now as I am trying to evaluate 
+ * mathematical expressions with ints only */
 
 /*
-static char *token_type_to_str(TokenType t)
-{
-        switch (t) {
-        case PLUS: return "plus";
-        case MIN: return "min";
-        case MULT: return "mult";
-        case DIV: return "div";
-        case LPAREN: return "lparen";
-        case RPAREN: return "rparen";
-        case SEMI_COLON: return "semicol";
-        case NUM: return "num";
-        case BOOL: return "bool";
-        case INVALID: return "invalid";
-        case EOF_TOK: return "eof";
-        }
-}
-*/
+ * static char *token_type_to_str(TokenType t)
+ * {
+ *         switch (t) {
+ *         case PLUS: return "plus";
+ *         case MIN: return "min";
+ *         case MULT: return "mult";
+ *         case DIV: return "div";
+ *         case LPAREN: return "lparen";
+ *         case RPAREN: return "rparen";
+ *         case SEMI_COLON: return "semicol";
+ *         case NUM: return "num";
+ *         case BOOL: return "bool";
+ *         case INVALID: return "invalid";
+ *         case EOF_TOK: return "eof";
+ *         }
+ * }
+ */
 
 static char lexer_peek_char(Lexer *l)
 {
