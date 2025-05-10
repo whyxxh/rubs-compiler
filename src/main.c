@@ -15,25 +15,27 @@ int main(int argc, char **argv)
 
 	Token *tokens = lexer_tokenize(content, get_file_size(f), &token_num);
         if (!tokens) {
-                fprintf(stderr, "failled tokenization");
+                fprintf(stderr, "failled tokenization\n");
                 return -1;
         }
 
         AST *ast;
         if (!ast_init(ast)){
-                fprintf(stderr, "failled ast initialisation");
+                fprintf(stderr, "failled ast initialisation\n");
                 return -1;  
         }
 
         if (!parse_tokens(tokens, ast)) {
-                fprintf(stderr, "failled token parsing");
+                fprintf(stderr, "failled token parsing\n");
                 return -1;  
         }
 
         int evaluation = evaluate_ast(ast->root);
-        printf("%d", evaluation);
+        printf("evaluation : %d\n", evaluation);
 
         free_tokens(tokens, token_num);
+        free_ast(ast);
 	free_file(f, content);
+
 	return 0;
 }

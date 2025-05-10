@@ -20,22 +20,22 @@ static void print_ast(AST *ast);
 
 int ast_init(AST *ast)
 {
-    if (!ast) return 0;
-    *ast = (AST){ .root = NULL };
-    return 1;
+        if (!ast) return 0;
+        *ast = (AST){ .root = NULL };
+        return 1;
 }
 
 static void free_ast_node(ASTNode *node)
 {
-    if (!node) return;
+        if (!node) return;
 
-    // Recursively free left and right children
-    if (node->node_type == NODE_BIN) {
-        free_ast_node(node->node.bin.left);
-        free_ast_node(node->node.bin.right);
-    }
+        // Recursively free left and right children
+        if (node->node_type == NODE_BIN) {
+                free_ast_node(node->node.bin.left);
+                free_ast_node(node->node.bin.right);
+        }
 
-    free(node);
+        free(node);
 }
 
 static Parser parser_init(Token *tokens)
@@ -185,34 +185,36 @@ static ASTNode *parse_expr(Parser *p)
 
 void free_ast(AST *ast)
 {
-    if (!ast) return;
-    free_ast_node(ast->root);
+        if (!ast) return;
+        free_ast_node(ast->root);
 }
 
 static void print_ast_node(ASTNode *node)
 {
-    if (!node) return;
+        if (!node) return;
 
-    if (node->node_type == NODE_NUM) {
-        printf("%s", node->node.num.token.val); // Assuming val is a string
-    } else if (node->node_type == NODE_BIN) {
-        printf("(");
-        print_ast_node(node->node.bin.left);
-        printf(" %s ", node->node.bin.token.val);
-        print_ast_node(node->node.bin.right);
-        printf(")");
-    }
+        if (node->node_type == NODE_NUM) {
+                printf("%s", node->node.num.token.val); 
+        } else if (node->node_type == NODE_BIN) {
+                printf("(");
+                print_ast_node(node->node.bin.left);
+                printf(" %s ", node->node.bin.token.val);
+                print_ast_node(node->node.bin.right);
+                printf(")");
+        } else {
+                printf("UNDEFINED");
+        }
 }
 
 static void print_ast(AST *ast)
 {
-    if (!ast || !ast->root) {
-        printf("<empty AST>\n");
-        return;
-    }
+        if (!ast || !ast->root) {
+                printf("<empty AST>\n");
+                return;
+        }
 
-    print_ast_node(ast->root);
-    printf("\n");
+        print_ast_node(ast->root);
+        printf("\n");
 }
 
 int parse_tokens(Token *tokens, AST *ast)
@@ -223,21 +225,19 @@ int parse_tokens(Token *tokens, AST *ast)
                 ast->root = parse_expr(&p); 
 
                 if (!ast->root) {
-                        fprintf(stderr, "Error: could not parse expression\n");
+                        fprintf(stderr, "[ERROR] could not parse expression\n");
                         return 0;
                 }
 
                 print_ast(ast);
 
                 if (parser_eat_token(SEMI_COLON, &p) &&
-                    p.curr_token.type != EOF_TOK) {
+                        p.curr_token.type != EOF_TOK) {
                         fprintf(stderr,
-                                "Error: expected semicolon or EOF, got '%s'\n",
+                                "[ERROR] expected semicolon or EOF, got '%s'\n",
                                 p.curr_token.val);
                         return 0;
                 }
-
-                free_ast(ast);
         }
 
 
