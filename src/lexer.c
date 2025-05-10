@@ -9,8 +9,10 @@
 const char *keywords[] = {
         NULL
 }; 
-/* NULL for now as I am trying to evaluate 
- * mathematical expressions with ints only */
+/*
+ * NULL for now as I am trying to evaluate 
+ * mathematical expressions with ints only 
+ */
 
 /*
  * static char *token_type_to_str(TokenType t)
