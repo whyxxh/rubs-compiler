@@ -24,7 +24,7 @@ File I/O basics
 
 Progress on lexer -> functional tokenizer
 
-**day 0x0...idk
+**day 0x0...idk**
 
 I HAVE A FUCKING INTERPRETER GODDAMN
 
