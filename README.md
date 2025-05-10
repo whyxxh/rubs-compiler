@@ -28,5 +28,5 @@ Progress on lexer -> functional tokenizer
 
 I HAVE A FUCKING INTERPRETER GODDAMN
 
-> ![NOTE]
+> [!NOTE]
 > use after frees are the devil
