@@ -3,13 +3,12 @@
 #include "../include/parser.h"
 #include "../include/evaluator.h"
 
-// Public interface
+
 int ast_init(AST *ast);
 void free_ast(AST *ast);
 void print_ast(AST *ast);
 int parse_tokens_and_eval(Token *tokens, AST *ast);
 
-// Internal/static functions
 static void free_ast_node(ASTNode *node);
 static Parser parser_init(Token *tokens);
 static void parser_advance_token(Parser *p);
@@ -230,8 +229,8 @@ int parse_tokens_and_eval(Token *tokens, AST *ast)
                 }
 
                 print_ast(ast);
-                int eval = evaluate_ast(ast->root);
-                printf("evaluation : %d\n", eval);
+                float eval = evaluate_ast(ast->root);
+                printf("evaluation : %f\n", eval);
 
                 if (parser_eat_token(SEMI_COLON, &p) &&
                     p.curr_token.type != EOF_TOK) {

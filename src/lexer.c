@@ -6,6 +6,19 @@
 #include <string.h>
 #include "../include/lexer.h"
 
+void free_tokens(Token *tokens, unsigned int token_num);
+Token *lexer_tokenize(char *f_content, long f_size, unsigned int *token_num);
+
+static char lexer_peek_char(Lexer *l);
+static char lexer_read_char(Lexer *l);
+static Lexer lexer_init(char *f_content, long f_size);
+static void skip_spaces(Lexer *l);
+static void skip_comments(Lexer *l);
+static int is_operator(Lexer *l);
+static int is_punctuation(Lexer *l);
+static char *lexer_get_num(Lexer *l);
+static Token lexer_next_token(Lexer *l);
+
 const char *keywords[] = {
         NULL
 }; 
@@ -13,25 +26,6 @@ const char *keywords[] = {
  * NULL for now as I am trying to evaluate 
  * mathematical expressions with ints only 
  */
-
-
-char *token_type_to_str(TokenType t)
-{
-        switch (t) {
-        case PLUS:       return "plus";
-        case MIN:        return "min";
-        case MULT:       return "mult";
-        case DIV:        return "div";
-        case LPAREN:     return "lparen";
-        case RPAREN:     return "rparen";
-        case SEMI_COLON: return "semicol";
-        case NUM:        return "num";
-        case BOOL:       return "bool";
-        case INVALID:    return "invalid";
-        case EOF_TOK:    return "eof";
-        }
-}
-
 
 static char lexer_peek_char(Lexer *l)
 {

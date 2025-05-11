@@ -3,7 +3,7 @@
 #include "../include/parser.h"
 #include "../include/lexer.h"
 
-int evaluate_ast(ASTNode *node) 
+float evaluate_ast(ASTNode *node) 
 {
         if (node == NULL) {
                 // fprintf(stderr, "[LOG] AST or NODE is NULL\n");
@@ -11,16 +11,16 @@ int evaluate_ast(ASTNode *node)
         }
 
         if (node->node_type == NODE_NUM) {
-                // fprintf(stderr, 
-                //         "[DEBUG] AST or NODE is NUMBER"
-                //         " and its value is : %s\n",
-                //         node->node.num.token.val);
-                return atoi(node->node.num.token.val);
+                fprintf(stderr, 
+                        "[DEBUG] AST or NODE is NUMBER"
+                        " and its value is : %s\n",
+                        node->node.num.token.val);
+                return atof(node->node.num.token.val);
         } else if (node->node_type == NODE_BIN) {
-                // fprintf(stderr, 
-                //         "[DEBUG] AST node is BINARY"
-                //         " and the value of the op is : %s\n",
-                //         node->node.num.token.val);
+                fprintf(stderr, 
+                        "[DEBUG] AST node is BINARY"
+                        " and the value of the op is : %s\n",
+                        node->node.num.token.val);
                 switch (node->node.bin.token.type) {
                 case PLUS :
                         return evaluate_ast(node->node.bin.left) +
@@ -35,10 +35,10 @@ int evaluate_ast(ASTNode *node)
                                evaluate_ast(node->node.bin.right);
 
                 case DIV : {
-                        int divisor = evaluate_ast(node->node.bin.right);
-                        printf("DIVISION BY 0\n");
-                        return divisor ? evaluate_ast(node->node.bin.left) /
-                               divisor : 0;
+                        float right = evaluate_ast(node->node.bin.right);
+                        if (right == 0) return 0;
+                        float left = evaluate_ast(node->node.bin.left);
+                        return left / right;
                 }
                 default : {
                         // fprintf(stderr, "[LOG] Unexpected token type: %s\n",
