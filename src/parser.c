@@ -3,7 +3,6 @@
 #include "../include/parser.h"
 #include "../include/evaluator.h"
 
-
 int ast_init(AST *ast);
 void free_ast(AST *ast);
 void print_ast(AST *ast);
@@ -67,8 +66,6 @@ static int parser_eat_token(TokenType type, Parser *p)
 
 static ASTNode *parse_factor(Parser *p)
 {
-        /* for now assuming no parenthesis */
-
         if (p->curr_token.type == LPAREN) {
                 if (parser_eat_token(LPAREN, p)) {
                         fprintf(stderr, "expected ')'; got %s",
@@ -225,22 +222,23 @@ int parse_tokens_and_eval(Token *tokens, AST *ast)
                 ast->root = parse_expr(&p); 
                 if (!ast->root) {
                         fprintf(stderr, "[ERROR] could not parse expression\n");
+
                         return 0;
                 }
 
-                print_ast(ast);
                 float eval = evaluate_ast(ast->root);
                 printf("evaluation : %f\n", eval);
+                print_ast(ast);
 
                 if (parser_eat_token(SEMI_COLON, &p) &&
                     p.curr_token.type != EOF_TOK) {
                         fprintf(stderr,
                                 "[ERROR] expected semicolon or EOF, got '%s'\n",
                                 p.curr_token.val);
+
                         return 0;
                 }
         }
-
 
         return 1;
 }
