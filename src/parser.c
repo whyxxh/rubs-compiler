@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../include/parser.h"
+#include "../include/evaluator.h"
 
 // Public interface
 int ast_init(AST *ast);
 void free_ast(AST *ast);
-int parse_tokens(Token *tokens, AST *ast);
+void print_ast(AST *ast);
+int parse_tokens_and_eval(Token *tokens, AST *ast);
 
 // Internal/static functions
 static void free_ast_node(ASTNode *node);
@@ -16,7 +18,6 @@ static ASTNode *parse_factor(Parser *p);
 static ASTNode *parse_term(Parser *p);
 static ASTNode *parse_expr(Parser *p);
 static void print_ast_node(ASTNode *node);
-static void print_ast(AST *ast);
 
 int ast_init(AST *ast)
 {
@@ -206,7 +207,7 @@ static void print_ast_node(ASTNode *node)
         }
 }
 
-static void print_ast(AST *ast)
+void print_ast(AST *ast)
 {
         if (!ast || !ast->root) {
                 printf("<empty AST>\n");
@@ -217,22 +218,23 @@ static void print_ast(AST *ast)
         printf("\n");
 }
 
-int parse_tokens(Token *tokens, AST *ast)
+int parse_tokens_and_eval(Token *tokens, AST *ast)
 {
         Parser p = parser_init(tokens);
 
         while (p.curr_token.type != EOF_TOK) {
                 ast->root = parse_expr(&p); 
-
                 if (!ast->root) {
                         fprintf(stderr, "[ERROR] could not parse expression\n");
                         return 0;
                 }
 
                 print_ast(ast);
+                int eval = evaluate_ast(ast->root);
+                printf("evaluation : %d\n", eval);
 
                 if (parser_eat_token(SEMI_COLON, &p) &&
-                        p.curr_token.type != EOF_TOK) {
+                    p.curr_token.type != EOF_TOK) {
                         fprintf(stderr,
                                 "[ERROR] expected semicolon or EOF, got '%s'\n",
                                 p.curr_token.val);

@@ -25,13 +25,10 @@ int main(int argc, char **argv)
                 return -1;  
         }
 
-        if (!parse_tokens(tokens, ast)) {
+        if (!parse_tokens_and_eval(tokens, ast)) {
                 fprintf(stderr, "failled token parsing\n");
                 return -1;  
         }
-
-        int evaluation = evaluate_ast(ast->root);
-        printf("evaluation : %d\n", evaluation);
 
         free_tokens(tokens, token_num);
         free_ast(ast);

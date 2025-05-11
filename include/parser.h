@@ -43,7 +43,8 @@ typedef struct {
 } AST;
 
 int ast_init(AST *ast);
-int parse_tokens(Token *tokens, AST *ast);
+int parse_tokens_and_eval(Token *tokens, AST *ast);
+void print_ast(AST *ast);
 void free_ast(AST *ast);
 
 #endif // PARSER_H
