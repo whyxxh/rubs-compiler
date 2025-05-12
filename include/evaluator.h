@@ -4,6 +4,6 @@
 #include "lexer.h"
 #include "parser.h"
 
-int evaluate_ast(ASTNode *node);
+float evaluate_ast(ASTNode *node);
 
 #endif

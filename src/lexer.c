@@ -29,6 +29,7 @@ char *token_type_to_str(TokenType t)
         case BOOL:       return "bool";
         case INVALID:    return "invalid";
         case EOF_TOK:    return "eof";
+        default:         return "0";
         }
 }
 

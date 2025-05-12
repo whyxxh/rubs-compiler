@@ -226,9 +226,10 @@ int parse_tokens_and_eval(Token *tokens, AST *ast)
                         return 0;
                 }
 
-                float eval = evaluate_ast(ast->root);
-                printf("evaluation : %f\n", eval);
                 print_ast(ast);
+                float eval = evaluate_ast(ast->root);
+                fprintf(stderr, "[DEBUG] Just got eval: %f\n", eval);
+                printf("evaluation : %f\n", eval);
 
                 if (parser_eat_token(SEMI_COLON, &p) &&
                     p.curr_token.type != EOF_TOK) {

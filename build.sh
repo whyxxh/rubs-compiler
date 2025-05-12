@@ -4,7 +4,7 @@
 SRC_DIR="./src"           # Source files directory
 OUT="./rc"                 # Output binary
 CC="gcc"                   # Compiler
-CFLAGS="-Wall -Wextra" # Flags: warnings + optimization
+CFLAGS="-Wall -Wextra -Wall -Wextra -Werror -Wpedantic -Wstrict-prototypes -Wmissing-prototypes -Wno-unused-parameter -g" # Flags: warnings + optimization
 SRC_FILES=""
 for file in "$SRC_DIR"/*.c; do
     SRC_FILES="$SRC_FILES $file"
