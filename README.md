@@ -35,3 +35,8 @@ I HAVE A FUCKING INTERPRETER GODDAMN
 **update**
 
 i tried to make the evaluator return floats but i failled miserably
+
+**update**
+
+It now works, I actualy forgot to include the header in the `evaluator.c` and had a prototype of type int that returned 0 always.
+
