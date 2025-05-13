@@ -6,8 +6,23 @@
 #include <string.h>
 #include "../include/lexer.h"
 
+char *token_type_to_str(TokenType t);
+void free_tokens(Token *tokens, unsigned int token_num);
+Token *lexer_tokenize(char *f_content, long f_size, unsigned int *token_num);
+
+static char lexer_peek_char(Lexer *l);
+static char lexer_read_char(Lexer *l);
+static Lexer lexer_init(char *f_content, long f_size);
+static void skip_spaces(Lexer *l);
+static void skip_comments(Lexer *l);
+static int is_operator(Lexer *l);
+static int is_punctuation(Lexer *l);
+static char *lexer_get_num(Lexer *l);
+static Token lexer_next_token(Lexer *l);
+
+
 const char *keywords[] = {
-        NULL
+        NULL 
 }; 
 /*
  * NULL for now as I am trying to evaluate 

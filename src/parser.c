@@ -17,6 +17,7 @@ static ASTNode *parse_term(Parser *p);
 static ASTNode *parse_expr(Parser *p);
 static void print_ast_node(ASTNode *node);
 
+
 int ast_init(AST *ast)
 {
         if (!ast) return 0;
