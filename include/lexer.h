@@ -21,6 +21,7 @@ typedef enum {
         EOF_TOK,
 } TokenType;
 
+
 typedef struct {
         char *val;
         TokenType type;
