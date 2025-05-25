@@ -226,7 +226,6 @@ Token *lexer_tokenize(char *f_content, long f_size, unsigned int *token_num)
         *token_num = 0;
         tokens[*token_num] = lexer_next_token(&l);
         while (tokens[*token_num].type != EOF_TOK) {
-        
                 (*token_num)++;
 
                 if (*token_num >= token_arr_cap) {
