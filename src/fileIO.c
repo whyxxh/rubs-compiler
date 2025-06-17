@@ -1,3 +1,5 @@
+#define STR_IMPLEMENTATION
+#include "../include/str.h"
 #include "../include/fileIO.h"
 #include <stdlib.h>
 #include <stdio.h>
